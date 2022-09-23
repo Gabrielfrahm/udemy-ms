@@ -9,7 +9,7 @@ import { AppController } from './app.controller';
         name: 'CATEGORY',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://guest:guest@172.24.199.197:5672/smartranking'],
+          urls: ['amqp://guest:guest@172.21.167.190:5672/smartranking'],
           queue: 'smartranking_queue',
           queueOptions: {
             durable: false,

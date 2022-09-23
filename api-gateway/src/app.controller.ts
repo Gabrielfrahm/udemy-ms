@@ -2,14 +2,17 @@ import { ClientProxy } from '@nestjs/microservices';
 import {
   Body,
   Controller,
+  Get,
   Inject,
   Logger,
   Post,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 
 import { CreateCategoryDto } from './dtos/create-category';
+import { Observable } from 'rxjs';
 
 @Controller()
 export class AppController {
@@ -20,6 +23,12 @@ export class AppController {
   @Post('categories')
   @UsePipes(ValidationPipe)
   createCategory(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.client.emit('create-category', createCategoryDto);
+    this.client.emit('create-category', createCategoryDto);
+  }
+
+  @Get('categories')
+  getCategoryById(@Query('category_id') _id: string): Observable<any> {
+    console.log(_id);
+    return this.client.send('get-categories', _id ? _id : '');
   }
 }
