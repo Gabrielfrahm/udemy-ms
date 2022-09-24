@@ -1,7 +1,15 @@
 import { Controller, Logger } from '@nestjs/common';
-import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
+import {
+  Ctx,
+  EventPattern,
+  MessagePattern,
+  Payload,
+  RmqContext,
+} from '@nestjs/microservices';
 import { AppService } from './app.service';
 import { Category } from './interfaces';
+
+const ackErrors: string[] = ['E11000'];
 
 @Controller()
 export class AppController {
@@ -10,9 +18,25 @@ export class AppController {
   private readonly logger = new Logger(AppController.name);
 
   @EventPattern('create-category')
-  async createCategory(@Payload() category: Category) {
+  async createCategory(
+    @Payload() category: Category,
+    @Ctx() context: RmqContext,
+  ) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+
     this.logger.log(category);
-    this.appService.createCategory(category);
+    try {
+      await this.appService.createCategory(category);
+      await channel.ack(originalMsg);
+    } catch (error) {
+      this.logger.error(error.message);
+      ackErrors.map(async (ackError) => {
+        if (error.message.includes(ackError)) {
+          await channel.ack(originalMsg);
+        }
+      });
+    }
   }
 
   @MessagePattern('get-categories')

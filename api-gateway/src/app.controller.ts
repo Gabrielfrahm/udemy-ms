@@ -28,7 +28,6 @@ export class AppController {
 
   @Get('categories')
   getCategoryById(@Query('category_id') _id: string): Observable<any> {
-    console.log(_id);
     return this.client.send('get-categories', _id ? _id : '');
   }
 }
