@@ -5,7 +5,9 @@ import {
   Get,
   Inject,
   Logger,
+  Param,
   Post,
+  Put,
   Query,
   UsePipes,
   ValidationPipe,
@@ -13,6 +15,7 @@ import {
 
 import { CreateCategoryDto } from './dtos/create-category';
 import { Observable } from 'rxjs';
+import { UpdateCategoryDto } from './dtos/update-category';
 
 @Controller()
 export class AppController {
@@ -29,5 +32,17 @@ export class AppController {
   @Get('categories')
   getCategoryById(@Query('category_id') _id: string): Observable<any> {
     return this.client.send('get-categories', _id ? _id : '');
+  }
+
+  @Put('categories/:_id')
+  @UsePipes(ValidationPipe)
+  updateCategory(
+    @Body() updateCategoryDto: UpdateCategoryDto,
+    @Param('_id') _id: string,
+  ) {
+    this.client.emit('update-category', {
+      id: _id,
+      category: updateCategoryDto,
+    });
   }
 }

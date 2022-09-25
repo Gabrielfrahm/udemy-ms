@@ -30,12 +30,21 @@ export class AppService {
     }
   }
 
-  async getCategoryById(category: string): Promise<Category> {
+  async getCategoryById(_id: string): Promise<Category> {
     try {
-      const findCategory = await this.categoryModel
-        .findOne({ category })
-        .exec();
+      console.log(_id);
+      const findCategory = await this.categoryModel.findOne({ _id }).exec();
       return findCategory;
+    } catch (error) {
+      throw new RpcException(error.message);
+    }
+  }
+
+  async updateCategory(_id: string, category: Category): Promise<void> {
+    try {
+      await this.categoryModel
+        .findOneAndUpdate({ _id }, { $set: category })
+        .exec();
     } catch (error) {
       throw new RpcException(error.message);
     }
