@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 import { Category, Player } from './interfaces';
 
 @Injectable()
-export class AppService {
+export class CategoriesService {
   constructor(
     @InjectModel('Category') private readonly categoryModel: Model<Category>,
     @InjectModel('Category') private readonly playerModel: Model<Player>,

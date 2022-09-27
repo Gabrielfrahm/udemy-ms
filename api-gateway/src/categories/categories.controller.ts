@@ -16,25 +16,24 @@ import {
 import { CreateCategoryDto } from './dtos/create-category';
 import { Observable } from 'rxjs';
 import { UpdateCategoryDto } from './dtos/update-category';
-
-@Controller()
-export class AppController {
-  private logger = new Logger(AppController.name);
+@Controller('categories')
+export class CategoriesController {
+  private logger = new Logger(CategoriesController.name);
 
   constructor(@Inject('CATEGORY') private readonly client: ClientProxy) {}
 
-  @Post('categories')
+  @Post()
   @UsePipes(ValidationPipe)
   createCategory(@Body() createCategoryDto: CreateCategoryDto) {
     this.client.emit('create-category', createCategoryDto);
   }
 
-  @Get('categories')
+  @Get()
   getCategoryById(@Query('category_id') _id: string): Observable<any> {
     return this.client.send('get-categories', _id ? _id : '');
   }
 
-  @Put('categories/:_id')
+  @Put(':_id')
   @UsePipes(ValidationPipe)
   updateCategory(
     @Body() updateCategoryDto: UpdateCategoryDto,
