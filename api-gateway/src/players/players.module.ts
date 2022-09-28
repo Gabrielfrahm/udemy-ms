@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { CategoriesController } from './categories.controller';
+import { PlayersController } from './players.controller';
 
 @Module({
   imports: [
     ClientsModule.register([
       {
-        name: 'CATEGORY',
+        name: 'PLAYER',
         transport: Transport.RMQ,
         options: {
           urls: ['amqp://guest:guest@172.23.91.243:5672/smartranking'],
@@ -18,6 +18,6 @@ import { CategoriesController } from './categories.controller';
       },
     ]),
   ],
-  controllers: [CategoriesController],
+  controllers: [PlayersController],
 })
-export class CategoriesModule {}
+export class PlayersModule {}

@@ -9,7 +9,7 @@ import { CategoriesService } from './categories.service';
   imports: [
     MongooseModule.forFeature([
       { name: 'Category', schema: CategorySchema },
-      { name: 'Player', schema: playerSchema },
+      // { name: 'Player', schema: playerSchema },
     ]),
   ],
   controllers: [CategoriesController],
