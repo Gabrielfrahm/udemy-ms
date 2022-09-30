@@ -21,4 +21,43 @@ export class PlayersService {
       throw new RpcException(error.message);
     }
   }
+
+  async getAllPlayers(): Promise<Player[]> {
+    try {
+      return await this.playerModel.find().populate('category').exec();
+    } catch (error) {
+      this.logger.error('error:', JSON.stringify(error.message));
+      throw new RpcException(error.message);
+    }
+  }
+
+  async getPlayerById(_id: string): Promise<Player> {
+    try {
+      return await this.playerModel
+        .findOne({ _id })
+        .populate('category')
+        .exec();
+    } catch (error) {
+      this.logger.error('error', JSON.stringify(error.message));
+      throw new RpcException(error.message);
+    }
+  }
+
+  async updatePlayer(_id: string, player: Player): Promise<void> {
+    try {
+      await this.playerModel.findOneAndUpdate({ _id }, { $set: player }).exec();
+    } catch (error) {
+      this.logger.error(`error: ${JSON.stringify(error.message)}`);
+      throw new RpcException(error.message);
+    }
+  }
+
+  async deletePlayer(_id: any): Promise<void> {
+    try {
+      await this.playerModel.deleteOne({ _id }).exec();
+    } catch (error) {
+      this.logger.error(`error: ${JSON.stringify(error.message)}`);
+      throw new RpcException(error.message);
+    }
+  }
 }

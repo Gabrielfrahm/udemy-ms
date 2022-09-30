@@ -1,5 +1,11 @@
 import { Controller, Logger } from '@nestjs/common';
-import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
+import {
+  Ctx,
+  EventPattern,
+  MessagePattern,
+  Payload,
+  RmqContext,
+} from '@nestjs/microservices';
 import { Player } from 'src/categories/interfaces';
 import { PlayersService } from './players.service';
 
@@ -21,6 +27,60 @@ export class PlayersController {
       await channel.ack(originalMsg);
     } catch (error) {
       this.logger.log(`error: ${JSON.stringify(error.message)}`);
+      const filterAckError = ackErrors.filter((ackError) =>
+        error.message.includes(ackError),
+      );
+
+      if (filterAckError.length > 0) {
+        await channel.ack(originalMsg);
+      }
+    }
+  }
+
+  @MessagePattern('get-players')
+  async getPlayers(@Payload() _id: string, @Ctx() context: RmqContext) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    try {
+      if (_id) {
+        return this.playerService.getPlayerById(_id);
+      } else {
+        return await this.playerService.getAllPlayers();
+      }
+    } finally {
+      await channel.ack(originalMsg);
+    }
+  }
+
+  @EventPattern('update-player')
+  async updatePlayer(@Payload() data: any, @Ctx() context: RmqContext) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    try {
+      console.log(`data: ${JSON.stringify(data)}`);
+      const _id: string = data.id;
+      const player: Player = data.player;
+      await this.playerService.updatePlayer(_id, player);
+      await channel.ack(originalMsg);
+    } catch (error) {
+      const filterAckError = ackErrors.filter((ackError) =>
+        error.message.includes(ackError),
+      );
+
+      if (filterAckError.length > 0) {
+        await channel.ack(originalMsg);
+      }
+    }
+  }
+
+  @EventPattern('delete-player')
+  async deletePlayer(@Payload() _id: string, @Ctx() context: RmqContext) {
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+    try {
+      await this.playerService.deletePlayer(_id);
+      await channel.ack(originalMsg);
+    } catch (error) {
       const filterAckError = ackErrors.filter((ackError) =>
         error.message.includes(ackError),
       );
