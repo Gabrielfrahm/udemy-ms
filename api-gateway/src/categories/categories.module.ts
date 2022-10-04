@@ -9,7 +9,7 @@ import { CategoriesController } from './categories.controller';
         name: 'CATEGORY',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://guest:guest@172.17.195.159:5672/smartranking'],
+          urls: ['amqp://guest:guest@172.17.192.147:5672/smartranking'],
           queue: 'smartranking_queue',
           queueOptions: {
             durable: false,

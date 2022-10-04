@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { AwsModule } from 'src/aws/aws.module';
 import { PlayersController } from './players.controller';
 
 @Module({
@@ -9,7 +10,7 @@ import { PlayersController } from './players.controller';
         name: 'PLAYER',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://guest:guest@172.17.195.159:5672/smartranking'],
+          urls: [`amqp://guest:guest@172.17.192.147:5672/smartranking`],
           queue: 'smartranking_queue',
           queueOptions: {
             durable: false,
@@ -17,6 +18,7 @@ import { PlayersController } from './players.controller';
         },
       },
     ]),
+    AwsModule,
   ],
   controllers: [PlayersController],
 })
